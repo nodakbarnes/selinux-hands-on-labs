@@ -68,11 +68,21 @@ Through the menu system you can explore the policy, but I personally found it no
 
 # Finding the source code
 
-On EL9/Fedora 41, you need to file and download a copy of the **source** rpm for `selinux-policy`. At the time of writing this was `selinux-policy-38.1.45-3.el9_5.src.rpm ` for Rocky Linux 9 and `selinux-policy-41.27-1.fc41.src.rpm` for Fedora 41, or  which can be downloaded as follows:
+On EL9/Fedora 41, download a copy of the **source** rpm for `selinux-policy`. At the time of writing this was `selinux-policy-38.1.45-3.el9_5.src.rpm` for Rocky Linux 9 and `selinux-policy-41.27-1.fc41.src.rpm` for Fedora 41, or  which can be downloaded as follows:
 
 ```
-[james@selinux-dev selinux-hands-on-labs]$ curl -O https://download.rockylinux.org/pub/rocky/9/AppStream/source/tree/Packages/s/selinux-policy-38.1.45-3.el9_5.src.rpm # Rocky Linux 9
-[james@selinux-dev selinux-hands-on-labs]$ curl -O https://kojipkgs.fedoraproject.org//packages/selinux-policy/41.27/1.fc41/src/selinux-policy-41.27-1.fc41.src.rpm # Fedora 41
+[james@selinux-dev selinux-hands-on-labs]$ dnf download --source selinux-policy
+enabling baseos-source repository
+enabling appstream-source repository
+enabling extras-source repository
+Rocky Linux 9 - BaseOS                                                                              6.4 kB/s | 4.1 kB     00:00
+Rocky Linux 9 - BaseOS                                                                              2.3 MB/s | 2.5 MB     00:01
+Rocky Linux 9 - BaseOS - Source                                                                     409 kB/s | 276 kB     00:00
+Rocky Linux 9 - AppStream                                                                           8.1 kB/s | 4.5 kB     00:00
+Rocky Linux 9 - AppStream - Source                                                                  1.1 MB/s | 1.1 MB     00:00
+Rocky Linux 9 - Extras                                                                               13 kB/s | 2.9 kB     00:00
+Rocky Linux 9 - Extras Source                                                                        32 kB/s |  14 kB     00:00
+selinux-policy-38.1.45-3.el9_5.src.rpm                                                              1.5 MB/s | 1.1 MB     00:00
 ```
 
 Once you have a copy of the rpm extract the contents or install it as you prefer, also remembering to extract the tarballs of source code within the rpm. The below examples are for Rocky Linux 9 but the process will work the same on Fedora - just substitute the version number for your package as required:
