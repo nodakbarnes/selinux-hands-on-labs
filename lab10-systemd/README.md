@@ -49,6 +49,8 @@ init_daemon_domain(ntpd_t, ntpd_exec_t)
 Just from the name, that piece of code looks useful, so let's use our SELinux functions we downloaded previously to examine it:
 
 ```
+[james@selinux-dev lab10-systemd]$ source ../selinux-funcs-el9.txt
+[james@selinux-dev lab10-systemd]$ export POLICY_LOCATION=$HOME/selinux-hands-on-labs/refpolicy/selinux-policy-0113b35519369e628e7fcd87af000cfcd4b1fa6c/
 [james@selinux-dev lab10-systemd]$ seshowif init_daemon_domain
 interface(`init_daemon_domain',`
         gen_require(`
@@ -83,7 +85,7 @@ interface(`init_daemon_domain',`
 I will leave full expansion of this to the reader, but suffice to say this does everything we need to do, and lots more besides. In short it's perfect, so we just need to add one single line to our testprog policy:
 
 ```
-[james@selinux-dev lab10-systemd]$ diff testprog.te ../lab9-putting-it-all-together/testprog.te
+[james@selinux-dev lab10-systemd]$ diff testprog.te ../lab09-putting-it-all-together/testprog.te
 53,55d52
 < init_daemon_domain(testprog_t, testprog_exec_t)
 <
