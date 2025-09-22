@@ -12,7 +12,7 @@ Now it's time to put all this together and build a working policy to enable us t
 
 ```
 
-In this way we have defined a type for the executable, a configuration file type to ensure we can read the configuration file but in isolation from the test of the `/etc` directory, a type for the pid file as discussed in previous labs, and a type for the data directory. Note we have used a wildcard for the data directory to cover any file in there - this is an example here to show the alternative syntax and the regular expression style syntax that does in the `fc` file.
+In this way we have defined a type for the executable, a configuration file type to ensure we can read the configuration file but in isolation from the rest of the `/etc` directory, a type for the pid file as discussed in previous labs, and a type for the data directory. Note we have used a wildcard for the data directory to cover any file in there - this is an example here to show the alternative syntax and the regular expression style syntax that does in the `fc` file.
 
 Now that we have this created we can build the policy. Building on our previous policy from earlier, and the reference code we have taken from the `ntp` policy, `testprog`'s policy should look something like this:
 
@@ -146,8 +146,40 @@ Note that we had to run `restorecon` against all the files that `testprog` will 
 * The files were created from our previous labs, only in the wrong context as we hadn't defined one for them at that time.
 * Our policy of confining the application stops it from accessing files except in the very specific contexts we allowed
   * This applies even if the files were created in one of the `unconfined` contexts as our application is now confined and cannot access anything unless we specifically allow it.
+ 
+Let's kill the process we backgrounded previously:
+
+```
+[james@selinux-dev2 lab09-putting-it-all-together]$ fg
+sudo /usr/bin/testprog /etc/testprog.conf /var/run/testprog.pid
+^C
+[james@selinux-dev2 lab09-putting-it-all-together]$
+```
 
 Now we've made huge progress - our application is working again, only this time it's running in a confined domain and cannot access anything we haven't told it to. Feel free to play around with this - for example:
 
 1. Move `/usr/bin/testprog` to a new location or place, check the file context (hint: it should inherit from the parent directory) and try running it. See if it runs and check `audit.log`.
 2. Change one of the config files, or the output directory in the config file and see what happens. Play about with new contexts using `chcon` as discussed previously.
+
+If you check the status of the testprog service you'll notice it fails to launch due to a permission denied:
+```
+[james@selinux-dev2 lab09-putting-it-all-together]$ sudo systemctl start testprog
+[james@selinux-dev2 lab09-putting-it-all-together]$ ps -efZ | grep testprog
+system_u:system_r:init_t:s0     root      26390      1  0 15:20 ?        00:00:00 /usr/bin/testprog /etc/testprog.conf /var/run/testprog.pid
+
+[james@selinux-dev2 lab09-putting-it-all-together]$ sudo systemctl status testprog
+× testprog.service - SELinux Test Program
+     Loaded: loaded (/etc/systemd/system/testprog.service; enabled; preset: disabled)
+     Active: failed (Result: exit-code) since Sat 2025-01-04 21:32:14 UTC; 14s ago
+   Duration: 4ms
+    Process: 26350 ExecStart=/usr/bin/testprog /etc/testprog.conf /var/run/testprog.pid (code=exited, status=203/EXEC)
+   Main PID: 26350 (code=exited, status=203/EXEC)
+        CPU: 2ms
+
+Jan 04 21:32:14 selinux-dev2 systemd[26350]: testprog.service: Failed to locate executable /usr/bin/testprog: Permission denied
+Jan 04 21:32:14 selinux-dev2 systemd[26350]: testprog.service: Failed at step EXEC spawning /usr/bin/testprog: Permission denied
+Jan 04 21:32:14 selinux-dev2 systemd[1]: Started SELinux Test Program.
+Jan 04 21:32:14 selinux-dev2 systemd[1]: testprog.service: Main process exited, code=exited, status=203/EXEC
+Jan 04 21:32:14 selinux-dev2 systemd[1]: testprog.service: Failed with result 'exit-code'.
+```
+We'll fix that in the next lab.
